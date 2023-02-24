@@ -23,7 +23,7 @@ const getGoldPrice = async (retryTimes) => {
     const data = await crawl(
       "https://vnexpress.net/chu-de/gia-vang-1403",
       selectGoldPriceDOM,
-      ".box-giavang-new"
+      // ".box-giavang-new"
     );
     return data;
   } catch (error) {
