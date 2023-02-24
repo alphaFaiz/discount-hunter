@@ -1,7 +1,9 @@
 // https://api.telegram.org/bot1455186902:AAFBTAedxMZicAHgxI02JcYf0CuxN5g4tXY/sendMessage?chat_id=1185304660&text=ok
 const express = require("express");
 const https = require("https");
+const cors = require('cors')
 const app = express();
+app.use(cors())
 const port = 4001;
 const { getGoldPrice } = require('./pupeteerHelper');
 
@@ -20,7 +22,7 @@ app.get("/", (req, res) => {
   res.sendFile("./index.html", { root: __dirname });
 });
 
-app.get("/gold-price", async (req, res) => {
+app.get("/gold-price", cors(), async (req, res) => {
   const goldPrice = await getGoldPrice()
   res.send(goldPrice);
 });
