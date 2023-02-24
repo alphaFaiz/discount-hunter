@@ -13,7 +13,11 @@ const selectGoldPriceDOM = () => {
   };
 };
 
-const getGoldPrice = async () => {
+const getGoldPrice = async (retryTimes) => {
+  if (retryTimes > 10) {
+    return {}
+  }
+  if (!retryTimes) retryTimes = 0;
   try {
     console.log(`-Getting gold price...`);
     const data = await crawl(
@@ -25,7 +29,8 @@ const getGoldPrice = async () => {
   } catch (error) {
     console.log(`-Failed to get gold price`, error);
     /**Retry */
-    await getGoldPrice();
+    retryTimes++;
+    await getGoldPrice(retryTimes);
   }
 };
 
