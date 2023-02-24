@@ -22,7 +22,7 @@ app.get("/", (req, res) => {
   res.sendFile("./index.html", { root: __dirname });
 });
 
-app.get("/gold-price", cors(), async (req, res) => {
+app.get("/gold-price", async (req, res) => {
   const goldPrice = await getGoldPrice()
   res.send(goldPrice);
 });
