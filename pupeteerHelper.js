@@ -14,7 +14,7 @@ const selectGoldPriceDOM = () => {
 };
 
 const getGoldPrice = async (retryTimes) => {
-  if (retryTimes > 10) {
+  if (retryTimes > 3) {
     return {}
   }
   if (!retryTimes) retryTimes = 0;
