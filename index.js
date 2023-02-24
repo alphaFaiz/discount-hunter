@@ -2,7 +2,7 @@
 const express = require("express");
 const https = require("https");
 const app = express();
-const port = 3005;
+const port = 4001;
 const { getGoldPrice } = require('./pupeteerHelper');
 
 app.get("/", (req, res) => {
