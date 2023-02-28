@@ -1,30 +1,36 @@
 const puppeteer = require("puppeteer");
+const { readData, saveData } = require("./interactWithFile");
 
 const selectGoldPriceDOM = () => {
   const buyPriceSelector =
-    "#automation_TV0 > div.width_common.info-topic.box-giavang-new > div > table > tbody > tr:nth-child(7) > td:nth-child(2)";
+    "#page > div.bx1 > table > tbody > tr:nth-child(5) > td:nth-child(2)";
   const sellPriceSelector =
-    "#automation_TV0 > div.width_common.info-topic.box-giavang-new > div > table > tbody > tr:nth-child(7) > td:nth-child(3)";
+    "#page > div.bx1 > table > tbody > tr:nth-child(5) > td:nth-child(3)";
   const buyPriceElement = document.querySelector(buyPriceSelector);
   const sellPriceElement = document.querySelector(sellPriceSelector);
   return {
-    buyPrice: buyPriceElement.textContent.split(" ")[0],
-    sellPrice: sellPriceElement.textContent.split(" ")[0],
+    buyPrice: buyPriceElement.textContent,
+    sellPrice: sellPriceElement.textContent,
   };
 };
 
 const getGoldPrice = async (retryTimes) => {
   if (retryTimes > 3) {
-    return {}
+    return { sellPrice: 0 }
   }
   if (!retryTimes) retryTimes = 0;
+  console.log(`retryTimes:`, retryTimes)
   try {
     console.log(`-Getting gold price...`);
+    // const savedData = await readData('./data.json');
     const data = await crawl(
-      "https://vnexpress.net/chu-de/gia-vang-1403",
+      "https://sjc.com.vn/giavang/textContent.php",
       selectGoldPriceDOM,
-      // ".box-giavang-new"
+      ".bx1"
     );
+    // savedData.gold.buy = data.buyPrice;
+    // savedData.gold.sell = data.sellPrice;
+    // await saveData("./data.json", JSON.stringify(savedData));
     return data;
   } catch (error) {
     console.log(`-Failed to get gold price`, error);
@@ -35,7 +41,11 @@ const getGoldPrice = async (retryTimes) => {
 };
 
 const crawl = async (url, evaluateCallBack, requiredSelector) => {
-  const browser = await puppeteer.launch({ executablePath: '/usr/bin/chromium-browser' });
+  let options = process.env.environment === 'UBUNTU_SERVER' ? { 
+    executablePath: '/usr/bin/chromium-browser' 
+  } : {};
+  console.log(options, process.env.environment)
+  const browser = await puppeteer.launch(options);
   const page = await browser.newPage();
 
   await page.goto(url);

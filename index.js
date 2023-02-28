@@ -1,11 +1,13 @@
 // https://api.telegram.org/bot1455186902:AAFBTAedxMZicAHgxI02JcYf0CuxN5g4tXY/sendMessage?chat_id=1185304660&text=ok
 const express = require("express");
 const https = require("https");
-const cors = require('cors')
+const cors = require("cors");
+require("dotenv").config();
+
 const app = express();
-app.use(cors())
+app.use(cors());
 const port = 4001;
-const { getGoldPrice } = require('./pupeteerHelper');
+const { getGoldPrice } = require("./pupeteerHelper");
 
 app.get("/", (req, res) => {
   // https
@@ -23,7 +25,7 @@ app.get("/", (req, res) => {
 });
 
 app.get("/gold-price", async (req, res) => {
-  const goldPrice = await getGoldPrice()
+  const goldPrice = await getGoldPrice();
   res.send(goldPrice);
 });
 
