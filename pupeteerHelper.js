@@ -40,6 +40,7 @@ const crawl = async (url, selectors, requiredSelector) => {
 };
 
 const crawlProducts = async () => {
+  console.log(`Crawling products at ${new Date()}`)
   const trackingProducts = await readData("./data.json");
   if (trackingProducts.length) {
     for (product of trackingProducts) {
@@ -66,9 +67,9 @@ const sendTelegramMsg = async (msg) => {
       console.log("Error: " + err.message);
     });
 }
-(async () => {
-  await crawlProducts();
-})();
+// (async () => {
+//   await crawlProducts();
+// })();
 
 module.exports = {
   getGoldPrice,

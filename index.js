@@ -9,9 +9,8 @@ const port = 4001;
 const { getGoldPrice, crawlProducts } = require("./pupeteerHelper");
 
 const job = new CronJob(
-	'0 9,17 * * * *',
+	process.env.cron_pattern,
 	async function() {
-    console.log(`Crawling products at ${new Date()}`)
     await crawlProducts();
 	},
 	null,
