@@ -1,26 +1,25 @@
-// https://api.telegram.org/bot1455186902:AAFBTAedxMZicAHgxI02JcYf0CuxN5g4tXY/sendMessage?chat_id=1185304660&text=ok
 const express = require("express");
-const https = require("https");
 const cors = require("cors");
 require("dotenv").config();
+const { CronJob } = require('cron');
 
 const app = express();
 app.use(cors());
 const port = 4001;
-const { getGoldPrice } = require("./pupeteerHelper");
+const { getGoldPrice, crawlProducts } = require("./pupeteerHelper");
+
+const job = new CronJob(
+	'0 9,17 * * * *',
+	async function() {
+    console.log(`Crawling products at ${new Date()}`)
+    await crawlProducts();
+	},
+	null,
+	true,
+  'Asia/Ho_Chi_Minh'
+);
 
 app.get("/", (req, res) => {
-  // https
-  //   .get(
-  //     `https://api.telegram.org/bot1455186902:AAFBTAedxMZicAHgxI02JcYf0CuxN5g4tXY/sendMessage?chat_id=1185304660&text=ok${123}`,
-  //     (resp) => {
-  //       const statusCode = resp.statusCode;
-  //     }
-  //   )
-  //   .on("error", (err) => {
-  //     console.log(`Send error:`, new Date().toLocaleString());
-  //     console.log("Error: " + err.message);
-  //   });
   res.sendFile("./index.html", { root: __dirname });
 });
 

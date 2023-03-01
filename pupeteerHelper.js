@@ -1,50 +1,23 @@
 const puppeteer = require("puppeteer");
 const { readData, saveData } = require("./interactWithFile");
-
-const selectGoldPriceDOM = () => {
-  const buyPriceSelector =
-    "#page > div.bx1 > table > tbody > tr:nth-child(5) > td:nth-child(2)";
-  const sellPriceSelector =
-    "#page > div.bx1 > table > tbody > tr:nth-child(5) > td:nth-child(3)";
-  const buyPriceElement = document.querySelector(buyPriceSelector);
-  const sellPriceElement = document.querySelector(sellPriceSelector);
-  return {
-    buyPrice: buyPriceElement.textContent,
-    sellPrice: sellPriceElement.textContent,
-  };
-};
+const https = require("https");
 
 const getGoldPrice = async (retryTimes) => {
-  if (retryTimes > 3) {
-    return { sellPrice: 0 }
-  }
-  if (!retryTimes) retryTimes = 0;
-  console.log(`retryTimes:`, retryTimes)
-  try {
-    console.log(`-Getting gold price...`);
-    // const savedData = await readData('./data.json');
-    const data = await crawl(
-      "https://sjc.com.vn/giavang/textContent.php",
-      selectGoldPriceDOM,
-      ".bx1"
-    );
-    // savedData.gold.buy = data.buyPrice;
-    // savedData.gold.sell = data.sellPrice;
-    // await saveData("./data.json", JSON.stringify(savedData));
-    return data;
-  } catch (error) {
-    console.log(`-Failed to get gold price`, error);
-    /**Retry */
-    retryTimes++;
-    await getGoldPrice(retryTimes);
-  }
+  const trackingProducts = await readData("./data.json");
+  const { name, url, selectors, waitForSelector } = trackingProducts[0];
+  console.log(`-Getting ${name}...`);
+  const data = await crawl(url, selectors, waitForSelector);
+  return data;
 };
 
-const crawl = async (url, evaluateCallBack, requiredSelector) => {
-  let options = process.env.environment === 'UBUNTU_SERVER' ? { 
-    executablePath: '/usr/bin/chromium-browser' 
-  } : {};
-  console.log(options, process.env.environment)
+const crawl = async (url, selectors, requiredSelector) => {
+  let options =
+    process.env.environment === "UBUNTU_SERVER"
+      ? {
+          executablePath: "/usr/bin/chromium-browser",
+        }
+      : {};
+  console.log(options, process.env.environment);
   const browser = await puppeteer.launch(options);
   const page = await browser.newPage();
 
@@ -52,18 +25,52 @@ const crawl = async (url, evaluateCallBack, requiredSelector) => {
   if (requiredSelector) {
     await page.waitForSelector(requiredSelector);
   }
-  const data = await page.evaluate(evaluateCallBack);
+  let data = await page.evaluate((dataSelectors) => {
+    const selectedDOMs = dataSelectors.reduce((acc, curr) => {
+      acc[curr.name] = document.querySelector(curr.selector).textContent.trim();
+      return acc;
+    }, {});
+    return selectedDOMs;
+  }, selectors);
+  console.log(`-Get data success from ${url}`);
 
   await browser.close();
-  console.log(`-Get data success from ${url}`);
   console.log(data);
   return data;
 };
 
-// (async () => {
-//   await getGoldPrice();
-// })();
+const crawlProducts = async () => {
+  const trackingProducts = await readData("./data.json");
+  if (trackingProducts.length) {
+    for (product of trackingProducts) {
+      const { name, url, selectors, waitForSelector } = product;
+      console.log(`-Getting ${name}...`);
+      const data = await crawl(url, selectors, waitForSelector);
+      const msg = `${name}: ${JSON.stringify(data)}`;
+      await sendTelegramMsg(msg);
+      console.log(name, data);
+    }
+  }
+};
+
+const sendTelegramMsg = async (msg) => {
+  https
+    .get(
+      `https://api.telegram.org/bot1455186902:AAFBTAedxMZicAHgxI02JcYf0CuxN5g4tXY/sendMessage?chat_id=1185304660&text=${msg}`,
+      (resp) => {
+        const statusCode = resp.statusCode;
+      }
+    )
+    .on("error", (err) => {
+      console.log(`Send error:`, new Date().toLocaleString());
+      console.log("Error: " + err.message);
+    });
+}
+(async () => {
+  await crawlProducts();
+})();
 
 module.exports = {
   getGoldPrice,
-}
+  crawlProducts
+};

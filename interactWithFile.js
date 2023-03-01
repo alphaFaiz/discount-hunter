@@ -2,7 +2,11 @@ const fs = require("fs");
 
 const readData = async (path) => {
   const data = await fs.readFileSync(path);
-  return JSON.parse(JSON.parse(data));
+  try {
+    return JSON.parse(JSON.parse(data));    
+  } catch (error) {
+    return JSON.parse(data);
+  }
 };
 
 const saveData = async (path, data) => {

@@ -1,1 +1,27 @@
-"{\"gold\":{\"buy\":\"53,050,000\",\"sell\":\"53,950,000\"}}"
+[
+  {
+    "name": "gold",
+    "url": "https://sjc.com.vn/giavang/textContent.php",
+    "selectors": [
+      {
+        "name": "buyPrice",
+        "selector": "#page > div.bx1 > table > tbody > tr:nth-child(5) > td:nth-child(2)"
+      },
+      {
+        "name": "sellPrice",
+        "selector": "#page > div.bx1 > table > tbody > tr:nth-child(5) > td:nth-child(3)"
+      }
+    ],
+    "waitForSelector": ".bx1"
+  },
+  {
+    "name": "iphone13",
+    "url": "https://hoanghamobile.com/dien-thoai-di-dong/apple-iphone-13-128gb-chinh-hang-vn-a",
+    "selectors": [
+      {
+        "name": "price",
+        "selector": "body > section:nth-child(3) > div > div > div.product-details-container > div.product-center > p.price.current-product-price > strong"
+      }
+    ]
+  }
+]
