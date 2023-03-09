@@ -6,8 +6,8 @@ const bodyParser = require("body-parser");
 const { CronJob } = require("cron");
 
 const app = express();
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json({limit: '50mb'}));
+app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 app.use(cors());
 const port = 4001;
 const { getGoldPrice, crawlProducts } = require("./pupeteerHelper");
@@ -39,8 +39,8 @@ app.get("/gold-price", async (req, res) => {
 
 app.post("/save-cookies", async (req, res) => {
   const { instanceId, cookies } = req.body;
-  console.log(instanceId, cookies);
   const saveCookiesResult = await saveCookies(instanceId, cookies);
+  console.log(`-Save cookies result:`, saveCookiesResult);
   res.send({ result: saveCookiesResult });
 });
 
