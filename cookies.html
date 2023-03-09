@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      .column {
+        float: left;
+        width: 50%;
+      }
+
+      /* Clear floats after the columns */
+      .row:after {
+        content: "";
+        display: table;
+        clear: both;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="row">
+      <div id="sites" class="column"></div>
+      <div id="cookies" class="column"></div>
+    </div>
+    <script>
+      var cookiesData;
+      function toggle(url) {
+        const cookie = cookiesData.find((cookie) => cookie.url == url);
+        console.log(cookie);
+        console.log('formatted:', JSON.stringify(cookie));
+      }
+      (async () => {
+        let params = new URL(document.location).searchParams;
+        let instanceId = params.get("instanceId");
+        const { cookies } = await fetch(
+          `/get-cookies-by-instance?instanceId=${instanceId}`
+        ).then((data) => {
+          return data.json();
+        });
+        cookiesData = cookies;
+        cookies.forEach((site) => {
+          document.getElementById(
+            "sites"
+          ).innerHTML += `<div onclick="toggle('${site.url}')">${site.url}</div>`;
+        });
+      })();
+    </script>
+  </body>
+</html>

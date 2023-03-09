@@ -11,7 +11,7 @@ app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 app.use(cors());
 const port = 4001;
 const { getGoldPrice, crawlProducts } = require("./pupeteerHelper");
-const { saveCookies } = require("./zecter");
+const { saveCookies, getInstances, getInstanceCookies } = require("./zecter");
 
 const job =
   process.env.turn_on_cron == 1
@@ -27,9 +27,11 @@ const job =
     : () => {};
 
 app.get("/", async (req, res) => {
-  // res.sendFile("./index.html", { root: __dirname });
-  const data = await saveCookies();
-  res.send({ data });
+  res.sendFile("./index.html", { root: __dirname });
+});
+
+app.get("/cookies", async (req, res) => {
+  res.sendFile("./cookies.html", { root: __dirname });
 });
 
 app.get("/gold-price", async (req, res) => {
@@ -42,6 +44,17 @@ app.post("/save-cookies", async (req, res) => {
   const saveCookiesResult = await saveCookies(instanceId, cookies);
   console.log(`-Save cookies result:`, saveCookiesResult);
   res.send({ result: saveCookiesResult });
+});
+
+app.get("/get-cookies-instances", async (req, res) => {
+  const instances = await getInstances();
+  res.send({ instances });
+});
+
+app.get("/get-cookies-by-instance", async (req, res) => {
+  const {instanceId} = req.query;
+  const cookies = await getInstanceCookies(instanceId);
+  res.send({ cookies });
 });
 
 app.listen(port, () => {
