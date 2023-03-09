@@ -14,7 +14,7 @@ const saveData = async (path, data) => {
         await fs.writeFileSync(path, JSON.stringify(data));
         console.log(`:D Data updated!`)
     } catch (error) {
-        console.log(`:( Failed to save data.json`)
+        console.log(`:( Failed to save data`)
     }
 };
 

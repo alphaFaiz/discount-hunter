@@ -3,7 +3,7 @@ const { readData, saveData } = require("./interactWithFile");
 const https = require("https");
 
 const getGoldPrice = async (retryTimes) => {
-  const trackingProducts = await readData("./data.json");
+  const trackingProducts = await readData("./trackingProducts.json");
   const { name, url, selectors, waitForSelector } = trackingProducts[0];
   console.log(`-Getting ${name}...`);
   const data = await crawl(url, selectors, waitForSelector);
@@ -41,7 +41,7 @@ const crawl = async (url, selectors, requiredSelector) => {
 
 const crawlProducts = async () => {
   console.log(`Crawling products at ${new Date()}`)
-  const trackingProducts = await readData("./data.json");
+  const trackingProducts = await readData("./trackingProducts.json");
   if (trackingProducts.length) {
     for (product of trackingProducts) {
       const { name, url, selectors, waitForSelector } = product;
